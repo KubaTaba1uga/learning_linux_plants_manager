@@ -7,6 +7,8 @@ import subprocess
 
 from invoke import task
 
+from rpi_linux import build as build_rpi_linux
+
 ###############################################
 #                Public API                   #
 ###############################################
@@ -23,16 +25,20 @@ def install(c):
     Usage:
         inv install
     """
-    dependencies = {"git": "git"}
+    dependencies = {
+        "git": "git",
+        "clang-check": "clang-tools",
+        "llvm-config": "llvm",
+        "clang": "clang",
+        "lld": "lld",
+        "jq": "jq",
+    }
     _pr_info("Installing dependencies...")
 
     for dep_cmd, dep_package in dependencies.items():
         if not _command_exists(dep_cmd):
             _pr_warn(f"{dep_cmd} not found. Installing {dep_cmd}...")
-            c.run(
-                f"sudo apt-get install -y {dep_package}",
-                warn=True,
-            )
+            _run_command(c, f"sudo apt-get install -y {dep_package}")
         else:
             _pr_info(f"{dep_cmd} already installed")
 
@@ -46,7 +52,7 @@ def build(c):
             "name": "rpi_linux",
             "git_url": "https://github.com/raspberrypi/linux",
             "git_commit": "08d4e8f52256bd422d8a1f876411603f627d0a82",
-            "build_func": None,
+            "build_func": build_rpi_linux,
         },
         {
             "name": "am2303_driver",
@@ -76,21 +82,32 @@ def build(c):
 
     _pr_info("Building app...")
 
-    c.cd(BUILD_PATH)
+    with c.cd(BUILD_PATH):
+        for repo in repos_to_download:
+            repo_path = os.path.join(BUILD_PATH, repo["name"])
+            # if os.path.exists(repo_path):
+            #     _pr_info(f"Skipping {repo['name']}...")
+            #     continue
 
-    for repo in repos_to_download:
-        _pr_info(f"Building {repo['name']}...")
+            # _pr_info(f"Building {repo['name']}...")
 
-        c.run(
-            f"git clone {repo['git_url']} {repo['name']} && cd {repo['name']} && git checkout {repo['git_commit']}"
-        )
+            # _run_command(
+            #     c,
+            #     f"git clone {repo['git_url']} {repo_path} && cd {repo_path} && git checkout {repo['git_commit']}",
+            # )
 
-        if repo["build_func"]:
-            c.cd(repo["name"])
-            repo["build_func"](repo)
-            c.cd("..")
+            if repo["build_func"]:
+                with c.cd(repo_path):
+                    repo["build_func"](
+                        utils={
+                            "ctx": c,
+                            "_run_command": _run_command,
+                            "repo_path": repo_path,
+                        },
+                        repo=repo,
+                    )
 
-        _pr_info(f"Build {repo['name']} succesfully")
+            _pr_info(f"Build {repo['name']} succesfully")
 
     _pr_info("Build app succesfully")
 
@@ -137,264 +154,6 @@ def clean(c, extra=""):
     _pr_info("Clean up completed.")
 
 
-@task
-def deploy(c, machines=None):
-    """
-    Deploy the main Ansible playbook for all single-board computers (SBCs).
-
-    Args:
-        machines (str, optional): A comma-separated list of machines to target.
-                                  If not provided, deploys to all machines.
-
-    Usage:
-        inv deploy
-        inv deploy --machines=machine1,machine2
-    """
-    _pr_info("Running main playbook for SBCs deployment...")
-
-    # Check if Ansible and ansible-playbook are installed
-    if not _command_exists("ansible"):
-        _pr_error("Ansible command not found. Please install Ansible first.")
-        return
-    if not _command_exists("ansible-playbook"):
-        _pr_error("ansible-playbook command not found. Please install Ansible first.")
-        return
-
-    # Define the paths for the playbook and inventory files
-    playbook_path = os.path.join(SRC_PATH, "main.yaml")
-    inventory_path = os.path.join(SRC_PATH, "inventory.yaml")
-
-    # Check if the playbook and inventory files exist
-    if not os.path.isfile(playbook_path):
-        _pr_error(f"Playbook file not found at {playbook_path}.")
-        return
-    if not os.path.isfile(inventory_path):
-        _pr_error(f"Inventory file not found at {inventory_path}.")
-        return
-
-    # Run the ansible-playbook command
-    command = (
-        f"ansible-playbook -i {inventory_path}"
-        + ("" if not machines else f" -l {machines}")
-        + f" {playbook_path}"
-    )
-    result = c.run(command, warn=True)
-
-    if result.ok:
-        _pr_info("Playbook ran successfully.")
-    else:
-        _pr_error("Playbook execution failed.")
-
-
-@task
-def run(c, command="", machines=None):
-    """
-    Run a specified command on all machines in the inventory or on a subset if specified.
-
-    Args:
-        command (str): The command to execute on the machines.
-        machines (str, optional): A comma-separated list of machines to target.
-                                  If None, runs the command on all machines in the inventory.
-
-    Usage:
-        inv run --command='uptime'
-        inv run --command='uptime' --machines='machine1,machine2'
-    """
-    inventory_path = os.path.join(SRC_PATH, "inventory.yaml")
-
-    # Check if the inventory file exists
-    if not os.path.isfile(inventory_path):
-        _pr_error(f"Inventory file not found at {inventory_path}.")
-        return
-
-    ansible_command = (
-        f"ansible -i {inventory_path} "
-        + ("" if not machines else f" -l {machines} ")
-        + f"-m shell -a '{command}'"
-    )
-
-    # Execute the command on specified machines or all in the inventory
-    _pr_info(f"Running command on target machines: {ansible_command}")
-    result = c.run(ansible_command, warn=True)
-
-    if result.ok:
-        _pr_info("Command ran successfully on target machines.")
-    else:
-        _pr_error("Command execution failed on target machines.")
-
-
-@task
-def preconfigure(c):
-    """
-    Run the preconfiguration playbook for all boards.
-
-    Usage:
-        inv preconfigure
-    """
-    _pr_info("Running preconfiguration playbook...")
-
-    # Check if Ansible and ansible-playbook are installed
-    if not _command_exists("ansible"):
-        _pr_error("Ansible command not found. Please install Ansible first.")
-        return
-    if not _command_exists("ansible-playbook"):
-        _pr_error("ansible-playbook command not found. Please install Ansible first.")
-        return
-
-    # Define the paths for the playbook and inventory files
-    playbook_path = os.path.join(SRC_PATH, "prepare_board", "main.yaml")
-    inventory_path = os.path.join(SRC_PATH, "prepare_board", "inventory.yaml")
-
-    # Check if the playbook file exists
-    if not os.path.isfile(playbook_path):
-        _pr_error(f"Playbook file not found at {playbook_path}.")
-        return
-    # Check if the inventory file exists
-    if not os.path.isfile(inventory_path):
-        _pr_error(f"Inventory file not found at {inventory_path}.")
-        return
-
-    # Construct and run the ansible-playbook command
-    command = f"ansible-playbook -v -i {inventory_path} {playbook_path}"
-    result = c.run(command, warn=True)
-
-    if result.ok:
-        _pr_info("Preconfiguration completed successfully.")
-    else:
-        _pr_error("Preconfiguration failed.")
-
-
-@task
-def create_image(c, board=None):
-    """
-    Prepare image for requested board.
-
-    Usage:
-        inv prepare_image --board <board>
-
-    Available boards:
-        - rpi-5
-        - orangepi-5
-    """
-    boards = {
-        "rpi-5": {},
-        "orangepi-5": {},
-    }
-
-    if board not in boards:
-        _pr_error(f"Invalid board: {board}.")
-        return
-
-    _pr_info("Running create_image playbook on localhost...")
-
-    # Check if Ansible and ansible-playbook are installed
-    if not _command_exists("ansible"):
-        _pr_error("Ansible command not found. Please install Ansible first.")
-        return
-    if not _command_exists("ansible-playbook"):
-        _pr_error("ansible-playbook command not found. Please install Ansible first.")
-        return
-    # Define the path for the playbook
-    playbook_path = os.path.join(SRC_PATH, "create_image", "main.yaml")
-
-    # Check if the playbook file exists
-    if not os.path.isfile(playbook_path):
-        _pr_error(f"Playbook file not found at {playbook_path}.")
-        return
-
-    # Run the ansible-playbook command
-    command = (
-        f'ansible-playbook {playbook_path} -i localhost, -c local -e "board={board}"'
-    )
-    result = c.run(command, warn=True)
-
-    if result.ok:
-        _pr_info("Prepare image playbook ran successfully.")
-    else:
-        _pr_error("Prepare image playbook execution failed.")
-        return
-
-    _pr_info(f"Adjusting image for {board}...")
-
-    # Run the compile.sh script
-    script_file = os.path.join(BUILD_PATH, "create-image.sh")
-    result = c.run(f"{script_file}", warn=True)
-
-    if not result.ok:
-        _pr_error("Image customization failed.")
-        return
-
-    _pr_info(f"Image for {board} ready in {BUILD_PATH}")
-
-
-@task
-def prepare_image(c, board=None):
-    """
-    Prepare image for requested board.
-
-    Usage:
-        inv prepare_image --board <board>
-
-    Available boards:
-        - rpi-5b
-        - orangepi-5
-    """
-    boards_scripts_map = {
-        "rpi-5b": "rpi-5b-compile.sh",
-        "orangepi-5": "opi-5-compile.sh",
-    }
-
-    if board not in boards_scripts_map:
-        _pr_error(f"Invalid board: {board}.")
-        return
-
-    _pr_info("Running prepare_image playbook on localhost...")
-
-    # Check if Ansible and ansible-playbook are installed
-    if not _command_exists("ansible"):
-        _pr_error("Ansible command not found. Please install Ansible first.")
-        return
-    if not _command_exists("ansible-playbook"):
-        _pr_error("ansible-playbook command not found. Please install Ansible first.")
-        return
-
-    # Define the path for the playbook
-    playbook_path = os.path.join(SRC_PATH, "prepare_image", "main.yaml")
-
-    # Check if the playbook file exists
-    if not os.path.isfile(playbook_path):
-        _pr_error(f"Playbook file not found at {playbook_path}.")
-        return
-
-    # Run the ansible-playbook command
-    command = f"ansible-playbook {playbook_path} -i localhost, -c local"
-    result = c.run(command, warn=True)
-
-    if result.ok:
-        _pr_info("Prepare image playbook ran successfully.")
-    else:
-        _pr_error("Prepare image playbook execution failed.")
-        return
-
-    _pr_info(f"Compiling image for {board}...")
-
-    # Run the compile.sh script
-    armbian_dir = os.path.join(BUILD_PATH, "armbian")
-    script_path = os.path.join(armbian_dir, boards_scripts_map[board])
-    result = c.run(f"cd {armbian_dir} && {script_path}", warn=True)
-
-    if not result.ok:
-        _pr_error("Image compilation failed.")
-        return
-
-    c.run(
-        f"mv {os.path.join(f'{armbian_dir}', 'output', 'images', '*.img')} {BUILD_PATH}",
-        warn=True,
-    )
-
-    _pr_info("Image compiled successfully.")
-
-
 ###############################################
 #                Private API                  #
 ###############################################
@@ -418,6 +177,21 @@ def _command_exists(command):
     except Exception:
         # Catch any other exceptions
         return False
+
+
+def _run_command(c, command):
+    _pr_debug(f"Executing '{command}'...")
+
+    try:
+        # Attempt to run the command with '--version' or any other flag that doesn't change system state
+        result = c.run(command, warn=True)
+
+        if not result.ok:
+            raise Exception("Result not ok")
+
+    except Exception as exc:
+        _pr_error(f"Command {command} failed: {exc}")
+        exit(1)
 
 
 def _cut_path_to_directory(full_path, target_directory):
