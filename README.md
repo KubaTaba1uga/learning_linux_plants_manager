@@ -12,6 +12,10 @@ Hardware required to build the app:
 - https://botland.store/raspberry-pi-5-modules-and-kits/25346-raspberry-pi-5-2gb-5056561803302.html
 - https://mikrobot.pl/czujnik-wilgotnosci-gleby-v1-2-pojemnosciowy
 
+## Architecture drawing
+
+![architecture drawing](./linux-plants-manager-architecture.jpg)
+
 ## Install perequesites
 
 To manage a project you need invoke python package. It can be installed on debian via
