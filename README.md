@@ -14,7 +14,7 @@ Hardware required to build the app:
 
 ## Architecture drawing
 
-![architecture drawing](./linux-plants-manager-architecture.jpg)
+![architecture drawing](./docs/linux-plants-manager-architecture.jpg)
 
 ## Install perequesites
 
