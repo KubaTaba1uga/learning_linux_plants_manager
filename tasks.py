@@ -40,7 +40,7 @@ def install(c):
 
 
 @task
-def build_app(c):
+def build(c):
     repos_to_download = [
         {
             "name": "rpi_linux",
@@ -50,13 +50,32 @@ def build_app(c):
         },
         {
             "name": "am2303_driver",
-            "git_url": "https://github.com/raspberrypi/linux",
-            "git_commit": "d9ffd2368a0a360ef4ddef85761f7d35aadda3d2",
+            "git_url": "https://github.com/KubaTaba1uga/kernel_am2303_driver",
+            "git_commit": "4a8617769e31499a7db18ec5029593d835aa6c07",
+            "build_func": None,
+        },
+        {
+            "name": "ads7830_soil_humid_driver",
+            "git_url": "https://github.com/KubaTaba1uga/kernel_ads7830_soil_humid_driver",
+            "git_commit": "fc8c9b00cf09b538667e2370823bf7f83546b5e4",
+            "build_func": None,
+        },
+        {
+            "name": "sqlite",
+            "git_url": "https://github.com/sqlite/sqlite",
+            "git_commit": "62d9d70eddda991bd3dedb55c1beb5a23fb6cae8",
+            "build_func": None,
+        },
+        {
+            "name": "buildroot",
+            "git_url": "https://github.com/buildroot/buildroot",
+            "git_commit": "aa2d7ca53f704af901f6c33c13e4bb1591886700",
             "build_func": None,
         },
     ]
 
     _pr_info("Building app...")
+
     c.cd(BUILD_PATH)
 
     for repo in repos_to_download:
@@ -71,7 +90,9 @@ def build_app(c):
             repo["build_func"](repo)
             c.cd("..")
 
-        _pr_info(f"Build {repo['name']}")
+        _pr_info(f"Build {repo['name']} succesfully")
+
+    _pr_info("Build app succesfully")
 
 
 @task

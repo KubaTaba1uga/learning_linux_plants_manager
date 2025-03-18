@@ -25,7 +25,30 @@ sudo apt install python3-invoke
 
 ## Build app
 
-<TO-DO>
+Building the app steps looks like these:
+1. Prepare boot partition
+  - Download linux kernel for rpi
+  - Apply custom configuration for rpi 5
+  - Compile kernel
+  - Download newest raspberry os
+  - Extract required files from raspberry os image boot partition
+  - Create tar file for boot partition
+2. Prepare rootfs
+  - Compile apps LKMs
+  - Download buildroot
+  - Render rootfs customization script
+  - Apply custom configuration for rpi 5
+  - Compile rootfs
+  - Create tar file for rootfs partition
+
+It can be triggered with
+```
+inv build
+```
+
+Once build is done you should see two files in `build` directory:
+- bootfs.tar
+- rootfs.tar
 
 ## Connect hardware
 
