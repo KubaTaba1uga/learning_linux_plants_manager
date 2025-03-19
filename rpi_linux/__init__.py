@@ -52,19 +52,6 @@ def build(utils, repo):
             snippet["insert_before"],
         )
 
-    _run_command(
-        c,
-        (
-            "export KERNEL=kernel_2712 && "
-            "export KDIR=$(pwd) && "
-            "export CROSS_COMPILE=aarch64-linux-gnu- && "
-            "export ARCH=arm64 && "
-            "export CC=clang && "
-            "export LLVM=1 && "
-            "make -j $(( $(nproc) * 2 )) all"
-        ),
-    )
-
 
 def _insert_snippet(dts_file, snippet, insert_before):
     # Read the file lines

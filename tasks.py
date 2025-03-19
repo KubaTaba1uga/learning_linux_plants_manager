@@ -7,6 +7,7 @@ import subprocess
 
 from invoke import task
 
+from buildroot import build as build_buildroot
 from rpi_linux import build as build_rpi_linux
 
 ###############################################
@@ -32,15 +33,16 @@ def install(c):
         "clang": "clang",
         "lld": "lld",
         "jq": "jq",
+        "tar": "tar",
     }
     _pr_info("Installing dependencies...")
 
     for dep_cmd, dep_package in dependencies.items():
         if not _command_exists(dep_cmd):
-            _pr_warn(f"{dep_cmd} not found. Installing {dep_cmd}...")
+            _pr_warn(f"{dep_cmd} not found. Installing {dep_package}...")
             _run_command(c, f"sudo apt-get install -y {dep_package}")
         else:
-            _pr_info(f"{dep_cmd} already installed")
+            _pr_info(f"{dep_package} already installed")
 
     _pr_info("Dependencies are installed")
 
@@ -76,7 +78,7 @@ def build(c):
             "name": "buildroot",
             "git_url": "https://github.com/buildroot/buildroot",
             "git_commit": "aa2d7ca53f704af901f6c33c13e4bb1591886700",
-            "build_func": None,
+            "build_func": build_buildroot,
         },
     ]
 
@@ -84,17 +86,14 @@ def build(c):
 
     with c.cd(BUILD_PATH):
         for repo in repos_to_download:
+            _pr_info(f"Building {repo['name']}...")
+
             repo_path = os.path.join(BUILD_PATH, repo["name"])
-            # if os.path.exists(repo_path):
-            #     _pr_info(f"Skipping {repo['name']}...")
-            #     continue
-
-            # _pr_info(f"Building {repo['name']}...")
-
-            # _run_command(
-            #     c,
-            #     f"git clone {repo['git_url']} {repo_path} && cd {repo_path} && git checkout {repo['git_commit']}",
-            # )
+            if not os.path.exists(repo_path):
+                _run_command(
+                    c,
+                    f"git clone {repo['git_url']} {repo_path} && cd {repo_path} && git checkout {repo['git_commit']}",
+                )
 
             if repo["build_func"]:
                 with c.cd(repo_path):
