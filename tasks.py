@@ -59,7 +59,7 @@ def build(c):
         {
             "name": "am2303_driver",
             "git_url": "https://github.com/KubaTaba1uga/kernel_am2303_driver",
-            "git_commit": "4a8617769e31499a7db18ec5029593d835aa6c07",
+            "git_commit": "8b1ca5fee01e0d32c8d74e7c4eb0164b02ae7dc1",
             "build_func": None,
         },
         {

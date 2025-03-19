@@ -11,4 +11,4 @@ def build(utils, repo):
 
     _run_command(c, f"cp {this_script_dir}/local.mk ./")
     _run_command(c, f"cp {this_script_dir}/.config ./")
-    _run_command(c, "make")
+    _run_command(c, "make BR2_EXTERNAL=../../buildroot all")

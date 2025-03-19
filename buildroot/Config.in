@@ -1,0 +1,1 @@
+source "$BR2_EXTERNAL_CUSTOM_TREE_PATH/package/am_2303_driver/Config.in"

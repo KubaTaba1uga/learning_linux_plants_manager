@@ -1,0 +1,4 @@
+config BR2_PACKAGE_AM_2303_DRIVER
+	bool "AM 2303 driver"
+	help
+	  LKM adding support for am 2303 temperature and humidity sensor.
