@@ -1,0 +1,4 @@
+config BR2_PACKAGE_ADC7830_SOIL_HUMID_DRIVER
+	bool "ADC7830 soil humidity driver"
+	help
+	  LKM adding support for ADC7830 soil humidity up to 8 sensors.

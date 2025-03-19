@@ -63,9 +63,9 @@ def build(c):
             "build_func": None,
         },
         {
-            "name": "ads7830_soil_humid_driver",
+            "name": "adc7830_soil_humid_driver",
             "git_url": "https://github.com/KubaTaba1uga/kernel_ads7830_soil_humid_driver",
-            "git_commit": "fc8c9b00cf09b538667e2370823bf7f83546b5e4",
+            "git_commit": "c2dc97724beeaaec4520364ad72a95d637788131",
             "build_func": None,
         },
         {
