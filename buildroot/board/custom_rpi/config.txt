@@ -11,7 +11,11 @@ arm_boost=1
 kernel=Image
 
 # Activate i2c on bus 1
+dtparam=i2c_arm=on
 dtoverlay=i2c1-pi5
 
 # Fix kernel panic from UART pin changes between bcm2712c1 and bcm2712d0
 dtoverlay=bcm2712d0
+
+# Enable boot over usb
+usb_max_current_enable
