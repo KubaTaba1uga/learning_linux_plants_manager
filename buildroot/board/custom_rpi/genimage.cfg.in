@@ -6,7 +6,9 @@ image boot.vfat {
 		
                 file overlays/bcm2712d0.dtbo {
 	          image = "overlays/bcm2712d0.dtbo"
-	        }		
+	        }
+
+		label = "bootfs"
 	}
 
 	size = 64M
