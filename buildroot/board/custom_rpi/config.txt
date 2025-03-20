@@ -18,4 +18,4 @@ dtoverlay=i2c1-pi5
 dtoverlay=bcm2712d0
 
 # Enable boot over usb
-usb_max_current_enable
+usb_max_current_enable=1

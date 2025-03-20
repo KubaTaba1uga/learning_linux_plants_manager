@@ -1,1 +1,2 @@
 * * * * * echo "Kernel log message at Thu Jan  1 00:05:36 UTC 1970" > /dev/kmsg
+
