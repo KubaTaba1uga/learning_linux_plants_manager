@@ -1,2 +1,4 @@
 source "$BR2_EXTERNAL_CUSTOM_TREE_PATH/package/am_2303_driver/Config.in"
 source "$BR2_EXTERNAL_CUSTOM_TREE_PATH/package/adc7830_soil_humid_driver/Config.in"
+source "$BR2_EXTERNAL_CUSTOM_TREE_PATH/package/read_sensors_job/Config.in"
+source "$BR2_EXTERNAL_CUSTOM_TREE_PATH/package/read_sensors_web/Config.in"

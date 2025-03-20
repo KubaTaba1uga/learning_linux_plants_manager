@@ -3,7 +3,7 @@
 set -u
 set -e
 
-find /lib/modules/*/updates -type f -name *driver*ko* -exec xz -d {} \;
+find $TARGET_DIR/lib/modules/*/updates -type f -name *driver*ko* -exec xz -d {} \;
 
 # If inittab exists, add a sysinit entry to load driver modules
 if [ -e "${TARGET_DIR}/etc/inittab" ]; then

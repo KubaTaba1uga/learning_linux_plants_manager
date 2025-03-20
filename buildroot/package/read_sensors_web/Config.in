@@ -1,9 +1,7 @@
 config BR2_PACKAGE_READ_SENSORS_WEB
+	select BR2_PACKAGE_PYTHON_UVICORN
+	select BR2_PACKAGE_PYTHON_FASTAPI
+	select BR2_PACKAGE_PYTHON3	
 	bool "read sensors web"
-	depends on BR2_PACKAGE_PYTHON3
-	depends on BR2_PACKAGE_PYTHON_FASTAPI
-	depends on BR2_PACKAGE_PYTHON_UVICORN
-	
 	help
 	  This package installs a FastAPI service that reads sensor data from DB.
-
