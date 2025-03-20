@@ -8,7 +8,7 @@ READ_SENSORS_WEB_DEPENDENCIES += python-uvicorn
 
 define READ_SENSORS_WEB_INSTALL_TARGET_CMDS
 	chmod 0755 $(@D)/read_sensors_web.py
-	cp $(@D)/read_sensors_web.py $(TARGET_DIR)/usr/bin
+	cp $(@D)/read_sensors_web.py $(TARGET_DIR)/opt
 endef
 
 $(eval $(generic-package))

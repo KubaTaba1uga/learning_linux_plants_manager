@@ -6,7 +6,7 @@ READ_SENSORS_JOB_DEPENDENCIES = python3
 
 define READ_SENSORS_JOB_INSTALL_TARGET_CMDS
 	chmod 0755 $(@D)/read_sensors_job.py
-	cp $(@D)/read_sensors_job.py $(TARGET_DIR)/usr/bin
+	cp $(@D)/read_sensors_job.py $(TARGET_DIR)/opt
 endef
 
 $(eval $(generic-package))
