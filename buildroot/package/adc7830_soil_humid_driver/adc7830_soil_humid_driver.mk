@@ -17,6 +17,5 @@ ADC7830_SOIL_HUMID_DRIVER_MAKE_OPTS = -j$(nproc)   # any additional options
 ADC7830_SOIL_HUMID_DRIVER_DEPENDENCIES = linux
 
 # Use the kernel module package infrastructure.
-# $(eval $(linux-module-package))
 $(eval $(kernel-module))
 $(eval $(generic-package))

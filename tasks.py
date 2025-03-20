@@ -8,6 +8,8 @@ import subprocess
 from invoke import task
 
 from buildroot import build as build_buildroot
+from read_sensors_job import build as build_read_sensors_job
+from read_sensors_web import build as build_read_sensors_web
 from rpi_linux import build as build_rpi_linux
 
 ###############################################
@@ -69,10 +71,12 @@ def build(c):
             "build_func": None,
         },
         {
-            "name": "sqlite",
-            "git_url": "https://github.com/sqlite/sqlite",
-            "git_commit": "62d9d70eddda991bd3dedb55c1beb5a23fb6cae8",
-            "build_func": None,
+            "name": "read_sensors_job",
+            "build_func": build_read_sensors_job,
+        },
+        {
+            "name": "read_sensors_web",
+            "build_func": build_read_sensors_web,
         },
         {
             "name": "buildroot",
@@ -90,10 +94,13 @@ def build(c):
 
             repo_path = os.path.join(BUILD_PATH, repo["name"])
             if not os.path.exists(repo_path):
-                _run_command(
-                    c,
-                    f"git clone {repo['git_url']} {repo_path} && cd {repo_path} && git checkout {repo['git_commit']}",
-                )
+                if repo.get("git_url"):
+                    _run_command(
+                        c,
+                        f"git clone {repo['git_url']} {repo_path} && cd {repo_path} && git checkout {repo['git_commit']}",
+                    )
+                else:
+                    _run_command(c, f"cp -r ../{repo['name']} {repo_path}")
 
             if repo["build_func"]:
                 with c.cd(repo_path):

@@ -1,0 +1,5 @@
+config BR2_PACKAGE_READ_SENSORS_JOB
+	bool "read sensors job"
+	depends on BR2_PACKAGE_PYTHON3
+	help
+	  Python script which reading sensors values and put them in DB.
