@@ -1,10 +1,10 @@
 # linux_plants_manager
 
 The project creates simple plants managment application on raspberry pi 5. Currently available features:
-- None
+- Monitor soil humidity
 <!-- - Monitor air temprature -->
 <!-- - Monitor air humidity -->
-<!-- - Monitor soil humidity -->
+
 
 Hardware required to build the app:
 - https://botland.store/multifunctional-sensors/2637-temperature-and-humidity-sensor-dht22-am2302-module-cables-5904422372712.html
@@ -25,35 +25,18 @@ sudo apt install python3-invoke
 
 ## Build app
 
-Building the app steps looks like these:
-1. Prepare boot partition
-  - Download linux kernel for rpi
-  - Apply custom configuration for rpi 5
-  - Compile kernel
-  - Download newest raspberry os
-  - Extract required files from raspberry os image boot partition
-  - Create tar file for boot partition
-2. Prepare rootfs
-  - Compile apps LKMs
-  - Download buildroot
-  - Render rootfs customization script
-  - Apply custom configuration for rpi 5
-  - Compile rootfs
-  - Create tar file for rootfs partition
-
-It can be triggered with
+Build can be triggered with
 ```
 inv build
 ```
 
-Once build is done you should see two files in `build` directory:
-- bootfs.tar
-- rootfs.tar
+Once build is done you should in `build` directory:
+- sdcard.img
 
 ## Connect hardware
 
 Connect ADS7830 to RPI 5:
-- VIN pin to 5v power
+- VIN pin to 3.3v power
 - GND pin to GND
 - SDA pin to GPIO 2
 - SCL pin to GPIO 3
