@@ -1,0 +1,75 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          ntpd
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start NTP daemon
+# Description:       Start the NTP daemon to synchronize system time.
+### END INIT INFO
+
+NAME="ntpd"
+NTPD="/usr/sbin/ntpd"  # Adjust path if needed
+PIDFILE="/var/run/${NAME}.pid"
+LOGFILE="/var/log/${NAME}.log"
+
+start() {
+    echo "Starting ${NAME}..."
+    if [ -f ${PIDFILE} ] && kill -0 $(cat ${PIDFILE}) 2>/dev/null; then
+        echo "${NAME} is already running."
+        exit 1
+    fi
+    # Start ntpd with options; for example, -p to specify the pid file and -g to allow large adjustments
+    ${NTPD} -p ${PIDFILE} -g >> ${LOGFILE} 2>&1 &
+    sleep 1
+    if [ -f ${PIDFILE} ] && kill -0 $(cat ${PIDFILE}) 2>/dev/null; then
+        echo "${NAME} started with PID $(cat ${PIDFILE})."
+    else
+        echo "Failed to start ${NAME}."
+        exit 1
+    fi
+}
+
+stop() {
+    echo "Stopping ${NAME}..."
+    if [ -f ${PIDFILE} ] && kill -0 $(cat ${PIDFILE}) 2>/dev/null; then
+        kill $(cat ${PIDFILE})
+        rm -f ${PIDFILE}
+        echo "${NAME} stopped."
+    else
+        echo "${NAME} is not running."
+        exit 1
+    fi
+}
+
+status() {
+    if [ -f ${PIDFILE} ] && kill -0 $(cat ${PIDFILE}) 2>/dev/null; then
+        echo "${NAME} is running with PID $(cat ${PIDFILE})."
+    else
+        echo "${NAME} is not running."
+    fi
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    stop
+    sleep 1
+    start
+    ;;
+  status)
+    status
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
+    ;;
+esac
+
+exit 0

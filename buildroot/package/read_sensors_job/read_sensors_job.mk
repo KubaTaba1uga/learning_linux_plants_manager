@@ -11,4 +11,3 @@ endef
 
 $(eval $(generic-package))
 
-# * * * * * python3 /usr/bin/read_sensors_job.py

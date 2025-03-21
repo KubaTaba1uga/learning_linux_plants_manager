@@ -4,9 +4,11 @@ import sqlite3
 db_path = "/opt/sensors.db"
 
 # Define file paths for sensor data
-soil_humid_path = "/proc/soil_humid"
-air_humid_path = "/proc/air_humid"
-air_temp_path = "/proc/air_temp"
+soil_humid_path = (
+    "/sys/devices/platform/axi/1000120000.pcie/1f00074000.i2c/i2c-1/1-0048/humidity_0"
+)
+air_humid_path = "/sys/devices/platform/am2303_device/humidity"
+air_temp_path = "/sys/devices/platform/am2303_device/temperature"
 
 
 def read_sensor_value(file_path):
@@ -14,21 +16,16 @@ def read_sensor_value(file_path):
     try:
         with open(file_path, "r") as f:
             # Read, strip whitespace, and convert to integer
-            return int(float(f.read().strip()))
+            return int(f.read().strip())
     except Exception as e:
         print(f"Error reading {file_path}: {e}")
-        return None
+        return -1
 
 
 # Read sensor values from the files
 soil_humid = read_sensor_value(soil_humid_path)
 air_humid = read_sensor_value(air_humid_path)
 air_temp = read_sensor_value(air_temp_path)
-
-# Ensure all values were successfully read before proceeding
-if None in (soil_humid, air_humid, air_temp):
-    print("One or more sensor values could not be read. Exiting.")
-    exit(1)
 
 # Generate a timestamp for the record
 timestamp = datetime.datetime.now().isoformat()

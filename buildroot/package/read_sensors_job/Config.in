@@ -1,5 +1,6 @@
 config BR2_PACKAGE_READ_SENSORS_JOB
 	select BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON3_SQLITE	
 	bool "read sensors job"
 	help
 	  Python script which reading sensors values and put them in DB.
