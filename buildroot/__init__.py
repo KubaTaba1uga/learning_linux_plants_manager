@@ -9,4 +9,10 @@ def build(utils, repo):
     _run_command(c, f"cp {this_script_dir}/local.mk ./")
     _run_command(c, f"cp {this_script_dir}/.config ./")
 
-    _run_command(c, "unset LLVM CC && make BR2_EXTERNAL=../../buildroot -j24")
+    _run_command(
+        c,
+        "unset LLVM CC &&"
+        " make BR2_EXTERNAL=../../buildroot/ read_sensors_job-dirclean &&"
+        " make BR2_EXTERNAL=../../buildroot/ read_sensors_web-dirclean &&"
+        " make BR2_EXTERNAL=../../buildroot -j24",
+    )

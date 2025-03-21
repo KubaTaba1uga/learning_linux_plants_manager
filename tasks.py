@@ -115,6 +115,11 @@ def build(c):
 
             _pr_info(f"Build {repo['name']} succesfully")
 
+    _run_command(
+        c,
+        f"cp {os.path.join(BUILD_PATH, 'buildroot', 'output', 'images', 'sdcard.img')} {os.path.join(BUILD_PATH, 'sdcard.img')}",
+    )
+
     _pr_info("Build app succesfully")
 
 

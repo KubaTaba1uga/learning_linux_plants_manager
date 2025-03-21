@@ -58,3 +58,9 @@ cursor.execute(
 conn.commit()
 
 conn.close()
+
+print(
+    f"{soil_humid_path}:{soil_humid}",
+    f"{air_humid_path}:{air_humid}",
+    f"{air_temp_path}:{air_temp}",
+)
