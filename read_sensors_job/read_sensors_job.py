@@ -13,13 +13,14 @@ air_temp_path = "/sys/devices/platform/am2303_device/temperature"
 
 def read_sensor_value(file_path):
     """Read and return the sensor value from a given file as an integer."""
-    try:
-        with open(file_path, "r") as f:
-            # Read, strip whitespace, and convert to integer
-            return int(f.read().strip())
-    except Exception as e:
-        print(f"Error reading {file_path}: {e}")
-        return -1
+    for _ in range(5):
+        try:
+            with open(file_path, "r") as f:
+                # Read, strip whitespace, and convert to integer
+                return int(f.read().strip())
+        except Exception as e:
+            print(f"Error reading {file_path}: {e}")
+    return -1
 
 
 # Read sensor values from the files
