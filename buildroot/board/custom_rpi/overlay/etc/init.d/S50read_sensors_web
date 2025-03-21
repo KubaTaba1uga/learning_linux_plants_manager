@@ -20,7 +20,6 @@ start() {
         echo "${NAME} is already running."
         exit 1
     fi
-    python3 /opt/read_sensors_job.py
     nohup python3 ${SCRIPT} >> ${LOGFILE} 2>&1 &
     echo $! > ${PIDFILE}
     echo "${NAME} started with PID $(cat ${PIDFILE})."
