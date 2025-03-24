@@ -1,14 +1,19 @@
 /* globals Chart:false, feather:false */
 (function () {
-  'use strict'
+  'use strict';
 
   // Replace feather icons
-  feather.replace({ 'aria-hidden': 'true' })
+  feather.replace({ 'aria-hidden': 'true' });
 
   // Get the canvas contexts
   var air_temp_ctx = document.getElementById('air_temp');
   var air_humid_ctx = document.getElementById('air_humid');
   var soil_humid_ctx = document.getElementById('soil_humid');
+
+  // Global variables to store Chart instances
+  let airTempChart = null;
+  let airHumidChart = null;
+  let soilHumidChart = null;
 
   // Function to load sensor data and render charts with an optional maxTimeRange (in seconds)
   async function loadSensorData(maxTimeRange) {
@@ -28,11 +33,19 @@
       const airTempData = dataRows.map(row => row.air_temp);
       const airHumidData = dataRows.map(row => row.air_humid);
 
-      // (Optional) Clear previous chart canvases if needed.
-      // For example, if charts are stored globally, destroy them before creating new ones.
+      // Destroy existing charts if they exist
+      if (airTempChart) {
+        airTempChart.destroy();
+      }
+      if (airHumidChart) {
+        airHumidChart.destroy();
+      }
+      if (soilHumidChart) {
+        soilHumidChart.destroy();
+      }
 
       // Create/update Air Temperature chart
-      new Chart(air_temp_ctx, {
+      airTempChart = new Chart(air_temp_ctx, {
         type: 'line',
         data: {
           labels: labels,
@@ -66,7 +79,7 @@
       });
 
       // Create/update Air Humidity chart
-      new Chart(air_humid_ctx, {
+      airHumidChart = new Chart(air_humid_ctx, {
         type: 'line',
         data: {
           labels: labels,
@@ -100,7 +113,7 @@
       });
 
       // Create/update Soil Humidity chart
-      new Chart(soil_humid_ctx, {
+      soilHumidChart = new Chart(soil_humid_ctx, {
         type: 'line',
         data: {
           labels: labels,
