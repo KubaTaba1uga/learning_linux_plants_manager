@@ -38,8 +38,9 @@ records = []
 
 # Generate dummy records.
 while start_dt <= end_dt:
-    # Convert current time to hours (since epoch) for sine calculations.
-    t = (start_dt - datetime.datetime(1970, 1, 1)).total_seconds() / 3600.0
+    # Round the current time to the hour: set minutes, seconds, microseconds to zero.
+    rounded_time = start_dt.replace(minute=0, second=0, microsecond=0)
+    t = (rounded_time - datetime.datetime(1970, 1, 1)).total_seconds() / 3600.0
 
     # Simulate 8 soil humidity sensors with phase offsets.
     soil_humids = [
@@ -49,7 +50,7 @@ while start_dt <= end_dt:
     air_humid = int(60 + 15 * math.sin((t + 1) * (2 * math.pi / 24)))
     air_temp = int(20 + 5 * math.sin((t - 3) * (2 * math.pi / 24)))
 
-    timestamp_str = start_dt.isoformat()
+    timestamp_str = rounded_time.isoformat()
     records.append((timestamp_str, *soil_humids, air_humid, air_temp))
     start_dt += delta
 
