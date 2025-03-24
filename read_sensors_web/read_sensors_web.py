@@ -11,7 +11,11 @@ this_script_dir = os.path.dirname(os.path.abspath(__file__))
 db_path = os.environ.get("SENSORS_DB_PATH") or "/opt/sensors.db"
 app = FastAPI()
 
-app.mount("/frontend", StaticFiles(directory="./frontend", html=True), name="frontend")
+app.mount(
+    "/frontend",
+    StaticFiles(directory=os.path.join(this_script_dir, "frontend"), html=True),
+    name="frontend",
+)
 
 
 def get_db_connection():
