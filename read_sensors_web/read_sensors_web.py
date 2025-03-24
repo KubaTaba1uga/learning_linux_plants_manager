@@ -3,10 +3,13 @@ import sqlite3
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 this_script_dir = os.path.dirname(os.path.abspath(__file__))
 db_path = os.environ.get("SENSORS_DB_PATH") or "/opt/sensors.db"
 app = FastAPI()
+
+app.mount("/", StaticFiles(directory="./frontend", html=True), name="frontend")
 
 
 def get_db_connection():
