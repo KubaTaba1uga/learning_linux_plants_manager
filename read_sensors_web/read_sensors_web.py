@@ -1,5 +1,7 @@
 import os
 import sqlite3
+import time
+from datetime import datetime
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
@@ -19,13 +21,21 @@ def get_db_connection():
 
 
 @app.get("/sensors")
-def read_sensors():
+def read_sensors(max_time_range: int = None):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM sensor_data")
+    query = "SELECT * FROM sensor_data"
+    params = []
+    if max_time_range is not None:
+        # Calculate the cutoff timestamp (assuming max_time_range is in hours)
+        cutoff_unix = int(time.time()) - max_time_range * 60 * 60
+        cutoff_iso = datetime.fromtimestamp(cutoff_unix).strftime("%Y-%m-%dT%H:%M:%S")
+
+        query += " WHERE timestamp >= ?"
+        params.append(cutoff_iso)
+    cursor.execute(query, params)
     rows = cursor.fetchall()
     conn.close()
-    # Convert rows to list of dictionaries
     data = [dict(row) for row in rows]
     return {"data": data}
 
