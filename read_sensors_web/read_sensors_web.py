@@ -1,8 +1,9 @@
+import os
 import sqlite3
 
 from fastapi import FastAPI
 
-db_path = "/opt/sensors.db"
+db_path = os.environ.get("SENSORS_DB_PATH") or "/opt/sensors.db"
 app = FastAPI()
 
 

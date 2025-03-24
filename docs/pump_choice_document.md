@@ -6,7 +6,7 @@ For small plants we use:
 ## Big plants
 
 If we want to use 5l canister as irrigation src, we may need to lift liquid few meters we may need better pump like:
-- https://www.amazon.com/peristaltic-KPHM200-Laboratory-High-Precision-OD%EF%BC%8C200ml/dp/B09HGVLHFV?ref_=ast_sto_dp&th=1
+- https://www.amazon.com/peristaltic-Brushed-Kamoer-KPHM400-Liquid/dp/B09MS6C91D
 
 ## How to control the pumps 
 The Raspberry Pi GPIO only outputs 3.3V at max ~16mA, not enough to power or switch devices like a 12V 1A pump (12W). So you need external powert source for the pump and the driver. A driver circuit acts as an electronic switch controlled by the Pi to turn the high-power load on/off using an external 12V power source.
