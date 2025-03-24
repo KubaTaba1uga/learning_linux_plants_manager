@@ -9,4 +9,4 @@ def build(utils, repo):
         utils["_run_command"],
     )
 
-    _run_command(c, f"cp {this_script_dir}/* ./")
+    _run_command(c, f"cp -r {this_script_dir}/* ./")
