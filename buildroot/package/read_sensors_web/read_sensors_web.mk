@@ -14,10 +14,11 @@ define READ_SENSORS_WEB_INSTALL_TARGET_CMDS
 	cp -r $(@D)/read_sensors_web.py $(@D)/frontend $(TARGET_DIR)/opt
 
 	# Ensure the init directory exists
-	@if [ ! -d "$(INIT_DIR)" ]; then \
+	if [ ! -d "$(INIT_DIR)" ]; then \
 	  mkdir -p "$(INIT_DIR)"; \
 	fi
 
+	chmod 0755 $(@D)/S50read_sensors_web
 	cp $(@D)/S50read_sensors_web $(INIT_DIR)/
 endef
 

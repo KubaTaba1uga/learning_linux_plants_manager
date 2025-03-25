@@ -61,13 +61,13 @@ def build(c):
         {
             "name": "am2303_driver",
             "git_url": "https://github.com/KubaTaba1uga/kernel_am2303_driver",
-            "git_commit": "8b1ca5fee01e0d32c8d74e7c4eb0164b02ae7dc1",
+            "git_commit": "95c33d6815e9945a1a5d2a1a9e623b116cc18a56",
             "build_func": None,
         },
         {
             "name": "adc7830_soil_humid_driver",
             "git_url": "https://github.com/KubaTaba1uga/kernel_ads7830_soil_humid_driver",
-            "git_commit": "c2dc97724beeaaec4520364ad72a95d637788131",
+            "git_commit": "2e3978cb1422c79b136d8ea6d47c0d7e12bd64af",
             "build_func": None,
         },
         {
