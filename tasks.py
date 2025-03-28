@@ -124,6 +124,58 @@ def build(c):
 
 
 @task
+def fritzing(c):
+    repos_to_download = [
+        {
+            "name": "fritizing_adafruit_library",
+            "git_url": "https://github.com/adafruit/Fritzing-Library.git",
+            "git_commit": "ce9919b1994e67d8e60108fd94d6928e671f1572",
+            "build_func": None,
+        },
+    ]
+
+    _pr_info("Starting fritizng...")
+
+    with c.cd(BUILD_PATH):
+        for repo in repos_to_download:
+            _pr_info(f"Building {repo['name']}...")
+
+            repo_path = os.path.join(BUILD_PATH, repo["name"])
+            if not os.path.exists(repo_path):
+                if repo.get("git_url"):
+                    _run_command(
+                        c,
+                        f"git clone {repo['git_url']} {repo_path} && cd {repo_path} && git checkout {repo['git_commit']}",
+                    )
+                else:
+                    _run_command(c, f"cp -r ../{repo['name']} {repo_path}")
+
+            if repo["build_func"]:
+                with c.cd(repo_path):
+                    repo["build_func"](
+                        utils={
+                            "ctx": c,
+                            "_run_command": _run_command,
+                            "repo_path": repo_path,
+                        },
+                        repo=repo,
+                    )
+
+            _pr_info(f"Build {repo['name']} succesfully")
+
+    _pr_info(
+        "Now in fritzing import build/fritizing_adafruit_library/AdaFrui.fzbz."
+        " To do so, open fritzing/breadboard.fzz and rigth-click on empty space"
+        " on Parts section on rigth side of breadboard, there should be `import`"
+        " option available."
+    )
+
+    _run_command(c, "fritzing")
+
+    _pr_info("Finshed fritzing")
+
+
+@task
 def clean(c, extra=""):
     """
     Clean up build and temporary files recursively.
