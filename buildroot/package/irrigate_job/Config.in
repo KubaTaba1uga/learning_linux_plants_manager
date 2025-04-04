@@ -1,0 +1,6 @@
+config BR2_PACKAGE_IRRIGATE_JOB
+	select BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON3_SQLITE	
+	bool "irrigate job"
+	help
+	  Python script which irrigate plants.

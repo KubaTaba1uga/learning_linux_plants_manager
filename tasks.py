@@ -8,6 +8,7 @@ import subprocess
 from invoke import task
 
 from buildroot import build as build_buildroot
+from irrigate_job import build as build_irrigate_job
 from read_sensors_job import build as build_read_sensors_job
 from read_sensors_web import build as build_read_sensors_web
 from rpi_linux import build as build_rpi_linux
@@ -74,7 +75,7 @@ def build(c):
         {
             "name": "irrigation_controller_driver",
             "git_url": "https://github.com/KubaTaba1uga/kernel_8channel_relay_module_driver",
-            "git_commit": "6e45916e44a3c601e222e7448f1edda0877c7619",
+            "git_commit": "0b5853ec8b73082a4b5b1396ead0ead0ba24f499",
             "build_func": None,
         },
         {
@@ -84,6 +85,10 @@ def build(c):
         {
             "name": "read_sensors_web",
             "build_func": build_read_sensors_web,
+        },
+        {
+            "name": "irrigate_job",
+            "build_func": build_irrigate_job,
         },
         {
             "name": "buildroot",

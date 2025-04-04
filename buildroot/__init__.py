@@ -12,6 +12,6 @@ def build(utils, repo):
     _run_command(
         c,
         "unset LLVM CC &&"
-        " make BR2_EXTERNAL=../../buildroot/ read_sensors_job-dirclean read_sensors_web-dirclean &&"
+        " make BR2_EXTERNAL=../../buildroot/ irrigate_job-dirclean read_sensors_job-dirclean read_sensors_web-dirclean &&"
         " make BR2_EXTERNAL=../../buildroot -j24",
     )
