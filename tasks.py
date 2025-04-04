@@ -72,6 +72,12 @@ def build(c):
             "build_func": None,
         },
         {
+            "name": "irrigation_controller_driver",
+            "git_url": "https://github.com/KubaTaba1uga/kernel_8channel_relay_module_driver",
+            "git_commit": "6e45916e44a3c601e222e7448f1edda0877c7619",
+            "build_func": None,
+        },
+        {
             "name": "read_sensors_job",
             "build_func": build_read_sensors_job,
         },

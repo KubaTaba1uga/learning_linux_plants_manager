@@ -1,0 +1,4 @@
+config BR2_PACKAGE_IRRIGATION_CONTROLLER_DRIVER
+	bool "irrigation controller driver"
+	help
+	  LKM adding support for GPIO based irrigation controller.
