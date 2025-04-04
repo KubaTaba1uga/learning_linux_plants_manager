@@ -2,6 +2,8 @@ import datetime
 import sqlite3
 import logging
 
+PLANTS = 4
+
 # Configure logging to file
 logging.basicConfig(
     filename="/var/log/read_sensors_job.log",
@@ -34,7 +36,7 @@ def read_sensor_value(file_path):
 
 # Read sensor values from the files
 soil_humids = []
-for i in range(8):
+for i in range(PLANTS):
     sensor_file = f"{soil_humid_path}_{i}"
     soil_humids.append(read_sensor_value(sensor_file))
 
@@ -56,7 +58,7 @@ except Exception as e:
 create_table_sql = f"""
     CREATE TABLE IF NOT EXISTS sensor_data (
         timestamp TEXT,
-        {'\n'.join(f'soil_humid_{i} INTEGER,' for i in range(8))}
+        {'\n'.join(f'soil_humid_{i} INTEGER,' for i in range(PLANTS))}
         air_humid INTEGER,
         air_temp INTEGER
     )
@@ -68,7 +70,7 @@ except Exception as e:
     logging.error(f"Error creating table: {e}")
     raise
 
-placeholders = ', '.join('?' for _ in range(1+8+1+1))
+placeholders = ', '.join('?' for _ in range(1+PLANTS+1+1))
 insert_sql = f"INSERT INTO sensor_data VALUES ({placeholders})"
 try:
     cursor.execute(insert_sql, (timestamp, *soil_humids, air_humid, air_temp))

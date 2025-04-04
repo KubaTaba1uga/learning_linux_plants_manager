@@ -2,6 +2,8 @@ import logging
 import sqlite3
 import time
 
+PLANTS = 4
+
 # Setup logging
 logging.basicConfig(
     filename="/var/log/irrigate_dry_plants_job.log",
@@ -66,7 +68,7 @@ def main():
     if not row:
         return
 
-    soil_values = row[1:9]
+    soil_values = row[1 : 1 + PLANTS]
     dry_plants = [
         idx for idx, value in enumerate(soil_values) if value < MOISTURE_THRESHOLD
     ]
