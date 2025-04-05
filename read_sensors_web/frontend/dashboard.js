@@ -169,7 +169,7 @@
         valveGroups[label].push(row.duration);
       });
 
-      const datasets = Object.entries(valveGroups).map(([label, data], index) => {
+      const datasets = Object.entries(valveGroups).reverse().map(([label, data], index) => {
         const plantIndex = parseInt(label.split(" ")[1]);
         return {
           label: label,
