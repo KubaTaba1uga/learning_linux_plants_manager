@@ -24,6 +24,11 @@ if [ -e "${TARGET_DIR}/etc/inittab" ]; then
     add_line_if_not_present \
         "${TARGET_DIR}/etc/inittab" \
         "::sysinit:/bin/sh -c 'find /lib/modules/*/updates -type f -name *7830*driver*ko* -exec insmod {} mp_min_voltage_output=10 mp_max_voltage_output=23 \;'"
+
+    add_line_if_not_present \
+        "${TARGET_DIR}/etc/inittab" \
+        "::sysinit:/bin/sh -c 'find /lib/modules/*/updates -type f -name *irrigation*driver*ko* -exec insmod {} \;'"
+    
 else
     echo "Error: ${TARGET_DIR}/etc/inittab not found." >&2
     exit 2
