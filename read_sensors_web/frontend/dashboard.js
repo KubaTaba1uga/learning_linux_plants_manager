@@ -11,7 +11,8 @@
   const soil_humid_ctx = document.getElementById('soil_humid');
   const waterings_ctx = document.getElementById('waterings');
 
-  // Generic ChartWrapper class with built-in shared options.
+  const plantColors = ['#2aff00', '#D500FF', '#20DFD1', '#D7DF20'];
+
   class ChartWrapper {
     static sharedOptions = {
       scales: {
@@ -19,19 +20,22 @@
           ticks: {
             callback: (value, index, values) =>
               (index === 0 || index === values.length - 1) ? value : ''
-          }
+          },
+          stacked: false
         }],
         yAxes: [{
-          ticks: { beginAtZero: false }
+          ticks: { beginAtZero: false },
+          stacked: false
         }]
       },
       legend: { display: true }
     };
 
-    constructor(ctx, labels, datasets) {
+    constructor(ctx, labels, datasets, type = 'line') {
       this.ctx = ctx;
       this.labels = labels;
       this.datasets = datasets;
+      this.type = type;
       this.options = ChartWrapper.sharedOptions;
       this.chartInstance = null;
       this.render();
@@ -42,7 +46,7 @@
         this.chartInstance.destroy();
       }
       const config = {
-        type: 'line',
+        type: this.type,
         data: {
           labels: this.labels,
           datasets: this.datasets
@@ -52,9 +56,10 @@
       this.chartInstance = new Chart(this.ctx, config);
     }
 
-    update(labels, datasets, options = {}) {
+    update(labels, datasets, type = this.type) {
       this.labels = labels;
       this.datasets = datasets;
+      this.type = type;
       this.render();
     }
   }
@@ -103,36 +108,36 @@
           data: dataRows.map(row => row.soil_humid_0),
           lineTension: 0,
           backgroundColor: 'transparent',
-          borderColor: '#2aff00',
+          borderColor: plantColors[0],
           borderWidth: 4,
-          pointBackgroundColor: '#2aff00'
+          pointBackgroundColor: plantColors[0]
         },
         {
           label: 'Plant 1',
           data: dataRows.map(row => row.soil_humid_1),
           lineTension: 0,
           backgroundColor: 'transparent',
-          borderColor: '#D500FF',
+          borderColor: plantColors[1],
           borderWidth: 4,
-          pointBackgroundColor: '#D500FF'
+          pointBackgroundColor: plantColors[1]
         },
         {
           label: 'Plant 2',
           data: dataRows.map(row => row.soil_humid_2),
           lineTension: 0,
           backgroundColor: 'transparent',
-          borderColor: '#20DFD1',
+          borderColor: plantColors[2],
           borderWidth: 4,
-          pointBackgroundColor: '#20DFD1'
+          pointBackgroundColor: plantColors[2]
         },
         {
           label: 'Plant 3',
           data: dataRows.map(row => row.soil_humid_3),
           lineTension: 0,
           backgroundColor: 'transparent',
-          borderColor: '#D7DF20',
+          borderColor: plantColors[3],
           borderWidth: 4,
-          pointBackgroundColor: '#D7DF20'
+          pointBackgroundColor: plantColors[3]
         }
       ]);
 
@@ -154,29 +159,27 @@
 
       const labels = dataRows.map(row => row.timestamp);
 
-      // Group by valve
+      // Group by valve/plant
       const valveGroups = {};
       dataRows.forEach(row => {
-        const label = `Valve ${row.valve_index}`;
+        const label = `Plant ${row.valve_index}`;
         if (!valveGroups[label]) {
           valveGroups[label] = [];
         }
-        valveGroups[label].push({ timestamp: row.timestamp, duration: row.duration });
+        valveGroups[label].push(row.duration);
       });
 
-      const datasets = Object.entries(valveGroups).map(([label, entries], index) => {
+      const datasets = Object.entries(valveGroups).map(([label, data], index) => {
+        const plantIndex = parseInt(label.split(" ")[1]);
         return {
           label: label,
-          data: entries.map(entry => entry.duration),
-          lineTension: 0,
-          backgroundColor: 'transparent',
-          borderColor: ['#ff6384', '#36a2eb', '#4bc0c0', '#9966ff'][index % 4],
-          borderWidth: 4,
-          pointBackgroundColor: ['#ff6384', '#36a2eb', '#4bc0c0', '#9966ff'][index % 4]
+          data: data,
+          backgroundColor: plantColors[plantIndex % plantColors.length],
+          borderWidth: 1
         };
       });
 
-      wateringsChart = new ChartWrapper(waterings_ctx, labels, datasets);
+      wateringsChart = new ChartWrapper(waterings_ctx, labels, datasets, 'bar');
 
     } catch (error) {
       console.error("Error fetching watering data:", error);
