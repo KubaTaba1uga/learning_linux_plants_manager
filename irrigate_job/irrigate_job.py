@@ -13,7 +13,7 @@ logging.basicConfig(
 
 # Config
 DB_PATH = "/opt/sensors.db"
-VALVE_SYSFS_PATH = "/sys/devices/platform/irrigation_controller_driver"
+VALVE_SYSFS_PATH = "/sys/devices/platform/irrigation_controller"
 MOISTURE_THRESHOLD = 50
 WATERING_DURATION = 10  # seconds per watering burst (N)
 WATERING_REPEATS = 6  # times to repeat watering (X)
