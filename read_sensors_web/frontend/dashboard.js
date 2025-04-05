@@ -9,10 +9,10 @@
   const air_temp_ctx = document.getElementById('air_temp');
   const air_humid_ctx = document.getElementById('air_humid');
   const soil_humid_ctx = document.getElementById('soil_humid');
+  const waterings_ctx = document.getElementById('waterings');
 
   // Generic ChartWrapper class with built-in shared options.
   class ChartWrapper {
-    // Shared options for all charts.
     static sharedOptions = {
       scales: {
         xAxes: [{
@@ -32,14 +32,12 @@
       this.ctx = ctx;
       this.labels = labels;
       this.datasets = datasets;
-      // Merge shared options with any additional options.
       this.options = ChartWrapper.sharedOptions;
       this.chartInstance = null;
       this.render();
     }
 
     render() {
-      // Destroy previous instance if it exists.
       if (this.chartInstance) {
         this.chartInstance.destroy();
       }
@@ -65,22 +63,20 @@
   let airTempChart = null;
   let airHumidChart = null;
   let soilHumidChart = null;
+  let wateringsChart = null;
 
-  // Function to load sensor data and render charts with an optional maxTimeRange (in seconds)
   async function loadSensorData(maxTimeRange) {
     let url = "/sensors";
     if (maxTimeRange) {
       url += "?max_time_range=" + maxTimeRange;
     }
-    
+
     try {
       const response = await fetch(url);
       const result = await response.json();
       const dataRows = result.data;
-
       const labels = dataRows.map(row => row.timestamp);
 
-      // Instantiate or update charts using the ChartWrapper.
       airTempChart = new ChartWrapper(air_temp_ctx, labels, [{
         label: 'Air Temperature',
         data: dataRows.map(row => row.air_temp),
@@ -90,6 +86,7 @@
         borderWidth: 4,
         pointBackgroundColor: '#007bff'
       }]);
+
       airHumidChart = new ChartWrapper(air_humid_ctx, labels, [{
         label: 'Air Humidity',
         data: dataRows.map(row => row.air_humid),
@@ -99,52 +96,100 @@
         borderWidth: 4,
         pointBackgroundColor: '#007bff'
       }]);
-      soilHumidChart = new ChartWrapper(soil_humid_ctx, labels, [{
-        label: 'Plant 0',
-        data: dataRows.map(row => row.soil_humid_0),
-        lineTension: 0,
-        backgroundColor: 'transparent',
-        borderColor: '#2aff00',
-        borderWidth: 4,
-        pointBackgroundColor: '#2aff00'
-      }, {
-        label: 'Plant 1',
-        data: dataRows.map(row => row.soil_humid_1),
-        lineTension: 0,
-        backgroundColor: 'transparent',
-        borderColor: '#D500FF',
-        borderWidth: 4,
-        pointBackgroundColor: '#D500FF'
-      }, {
-        label: 'Plant 2',
-        data: dataRows.map(row => row.soil_humid_2),
-        lineTension: 0,
-        backgroundColor: 'transparent',
-        borderColor: '#20DFD1',
-        borderWidth: 4,
-        pointBackgroundColor: '#20DFD1'
-      }, {
-        label: 'Plant 3',
-        data: dataRows.map(row => row.soil_humid_3),
-        lineTension: 0,
-        backgroundColor: 'transparent',
-        borderColor: '#D7DF20',
-        borderWidth: 4,
-        pointBackgroundColor: '#D7DF20'
-      }]);
+
+      soilHumidChart = new ChartWrapper(soil_humid_ctx, labels, [
+        {
+          label: 'Plant 0',
+          data: dataRows.map(row => row.soil_humid_0),
+          lineTension: 0,
+          backgroundColor: 'transparent',
+          borderColor: '#2aff00',
+          borderWidth: 4,
+          pointBackgroundColor: '#2aff00'
+        },
+        {
+          label: 'Plant 1',
+          data: dataRows.map(row => row.soil_humid_1),
+          lineTension: 0,
+          backgroundColor: 'transparent',
+          borderColor: '#D500FF',
+          borderWidth: 4,
+          pointBackgroundColor: '#D500FF'
+        },
+        {
+          label: 'Plant 2',
+          data: dataRows.map(row => row.soil_humid_2),
+          lineTension: 0,
+          backgroundColor: 'transparent',
+          borderColor: '#20DFD1',
+          borderWidth: 4,
+          pointBackgroundColor: '#20DFD1'
+        },
+        {
+          label: 'Plant 3',
+          data: dataRows.map(row => row.soil_humid_3),
+          lineTension: 0,
+          backgroundColor: 'transparent',
+          borderColor: '#D7DF20',
+          borderWidth: 4,
+          pointBackgroundColor: '#D7DF20'
+        }
+      ]);
 
     } catch (error) {
       console.error("Error fetching sensor data:", error);
     }
   }
 
-  // Function called on dropdown selection to set the time range and update charts.
+  async function loadWateringData(maxTimeRange) {
+    let url = "/waterings";
+    if (maxTimeRange) {
+      url += "?max_time_range=" + maxTimeRange;
+    }
+
+    try {
+      const response = await fetch(url);
+      const result = await response.json();
+      const dataRows = result.data;
+
+      const labels = dataRows.map(row => row.timestamp);
+
+      // Group by valve
+      const valveGroups = {};
+      dataRows.forEach(row => {
+        const label = `Valve ${row.valve_index}`;
+        if (!valveGroups[label]) {
+          valveGroups[label] = [];
+        }
+        valveGroups[label].push({ timestamp: row.timestamp, duration: row.duration });
+      });
+
+      const datasets = Object.entries(valveGroups).map(([label, entries], index) => {
+        return {
+          label: label,
+          data: entries.map(entry => entry.duration),
+          lineTension: 0,
+          backgroundColor: 'transparent',
+          borderColor: ['#ff6384', '#36a2eb', '#4bc0c0', '#9966ff'][index % 4],
+          borderWidth: 4,
+          pointBackgroundColor: ['#ff6384', '#36a2eb', '#4bc0c0', '#9966ff'][index % 4]
+        };
+      });
+
+      wateringsChart = new ChartWrapper(waterings_ctx, labels, datasets);
+
+    } catch (error) {
+      console.error("Error fetching watering data:", error);
+    }
+  }
+
   window.setTimeRange = function (rangeInSeconds, label) {
     document.getElementById('timeRangeButton').innerHTML = `<span data-feather="calendar"></span> ${label}`;
     loadSensorData(rangeInSeconds);
+    loadWateringData(rangeInSeconds);
   };
 
-  // Initial load with default time range (optional)
+  // Initial load
   loadSensorData();
+  loadWateringData();
 })();
-

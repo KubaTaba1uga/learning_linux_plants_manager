@@ -44,6 +44,27 @@ def read_sensors(max_time_range: int = None):
     return {"data": data}
 
 
+@app.get("/waterings")
+def read_waterings(max_time_range: int = None):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = "SELECT * FROM watering_log"
+    params = []
+
+    if max_time_range is not None:
+        # Calculate cutoff timestamp (ISO 8601 string)
+        cutoff_unix = int(time.time()) - max_time_range * 60 * 60
+        cutoff_iso = datetime.fromtimestamp(cutoff_unix).strftime("%Y-%m-%dT%H:%M:%S")
+        query += " WHERE timestamp >= ?"
+        params.append(cutoff_iso)
+
+    query += " ORDER BY timestamp DESC"
+    cursor.execute(query, params)
+    rows = cursor.fetchall()
+    conn.close()
+    return {"data": [dict(row) for row in rows]}
+
+
 @app.get("/", response_class=HTMLResponse)
 async def serve_index():
     with open(os.path.join(this_script_dir, "frontend", "index.html"), "r") as file:

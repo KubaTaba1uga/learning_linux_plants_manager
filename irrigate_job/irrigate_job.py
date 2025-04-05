@@ -33,11 +33,12 @@ def get_latest_readings():
 
 def log_watering(valve_index, duration):
     try:
+        timestamp = time.strftime("%Y-%m-%dT%H:%M:%S")
         with sqlite3.connect(DB_PATH) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO watering_log (valve_index, duration) VALUES (?, ?)",
-                (valve_index, duration),
+                "INSERT INTO watering_log (valve_index, duration, timestamp) VALUES (?, ?, ?)",
+                (valve_index, duration, timestamp),
             )
             conn.commit()
     except Exception as e:
