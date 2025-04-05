@@ -31,6 +31,25 @@ def get_latest_readings():
         return None
 
 
+def ensure_watering_log_table():
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS watering_log (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    valve_index INTEGER NOT NULL,
+                    duration INTEGER NOT NULL,
+                    timestamp TEXT NOT NULL
+                )
+            """
+            )
+            conn.commit()
+    except Exception as e:
+        logging.error(f"Failed to ensure watering_log table exists: {e}")
+
+
 def log_watering(valve_index, duration):
     try:
         timestamp = time.strftime("%Y-%m-%dT%H:%M:%S")
@@ -65,6 +84,8 @@ def water_plant(valve_index, duration):
 
 
 def main():
+    ensure_watering_log_table()  # Ensure table exists before use
+
     row = get_latest_readings()
     if not row:
         return
