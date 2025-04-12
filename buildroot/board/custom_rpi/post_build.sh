@@ -31,7 +31,7 @@ if [ -e "${TARGET_DIR}/etc/inittab" ]; then
 
     add_line_if_not_present \
         "${TARGET_DIR}/etc/inittab" \
-        "::sysinit:/bin/sh -c 'xz -d /lib/modules/6.6.78-v8-16k/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko.xz || modprobe /lib/modules/6.6.78-v8-16k/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko && ifup wlan0'"
+        "::sysinit:/bin/sh -c 'xz -d /lib/modules/6.6.78-v8-16k/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko.xz; modprobe /lib/modules/6.6.78-v8-16k/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko; sleep 5 && ifup wlan0'"
     
 else
     echo "Error: ${TARGET_DIR}/etc/inittab not found." >&2
