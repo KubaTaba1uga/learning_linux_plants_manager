@@ -1,0 +1,13 @@
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+
+allow-hotplug wlan0
+auto wlan0
+iface wlan0 inet dhcp
+  wpa-conf /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+
+# to generate wpa_supplicant-wlan0.conf do:
+#    su -l -c "wpa_passphrase \"myssid\" \"my_very_secret_passphrase\" >> /etc/wpa_supplicant/wpa_supplicant-wlan0.conf"
