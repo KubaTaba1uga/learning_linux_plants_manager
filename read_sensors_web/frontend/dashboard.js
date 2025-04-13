@@ -84,7 +84,7 @@
 
       airTempChart = new ChartWrapper(air_temp_ctx, labels, [{
         label: 'Air Temperature',
-        data: dataRows.map(row => row.air_temp),
+        data: dataRows.map(row => row.air_temp / 10),
         lineTension: 0,
         backgroundColor: 'transparent',
         borderColor: '#007bff',
@@ -94,7 +94,7 @@
 
       airHumidChart = new ChartWrapper(air_humid_ctx, labels, [{
         label: 'Air Humidity',
-        data: dataRows.map(row => row.air_humid),
+        data: dataRows.map(row => row.air_humid / 10),
         lineTension: 0,
         backgroundColor: 'transparent',
         borderColor: '#007bff',
@@ -104,7 +104,7 @@
 
       soilHumidChart = new ChartWrapper(soil_humid_ctx, labels, [
         {
-          label: 'Plant 0',
+          label: 'Plant 1',
           data: dataRows.map(row => row.soil_humid_0),
           lineTension: 0,
           backgroundColor: 'transparent',
@@ -113,7 +113,7 @@
           pointBackgroundColor: plantColors[0]
         },
         {
-          label: 'Plant 1',
+          label: 'Plant 2',
           data: dataRows.map(row => row.soil_humid_1),
           lineTension: 0,
           backgroundColor: 'transparent',
@@ -122,7 +122,7 @@
           pointBackgroundColor: plantColors[1]
         },
         {
-          label: 'Plant 2',
+          label: 'Plant 3',
           data: dataRows.map(row => row.soil_humid_2),
           lineTension: 0,
           backgroundColor: 'transparent',
@@ -131,7 +131,7 @@
           pointBackgroundColor: plantColors[2]
         },
         {
-          label: 'Plant 3',
+          label: 'Plant 4',
           data: dataRows.map(row => row.soil_humid_3),
           lineTension: 0,
           backgroundColor: 'transparent',
@@ -162,7 +162,7 @@
       // Group by valve/plant
       const valveGroups = {};
       dataRows.forEach(row => {
-        const label = `Plant ${row.valve_index}`;
+        const label = `Plant ${row.valve_index + 1}`;
         if (!valveGroups[label]) {
           valveGroups[label] = [];
         }

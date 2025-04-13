@@ -14,10 +14,10 @@ logging.basicConfig(
 # Config
 DB_PATH = "/opt/sensors.db"
 VALVE_SYSFS_PATH = "/sys/devices/platform/irrigation_controller"
-MOISTURE_THRESHOLD = 50
-WATERING_DURATION = 10  # seconds per watering burst (N)
-WATERING_REPEATS = 6  # times to repeat watering (X)
-DELAY_BETWEEN_WATERINGS = 10  # optional delay between repeats
+MOISTURE_THRESHOLD = 60
+WATERING_DURATION = 30  # seconds per watering burst (N)
+WATERING_REPEATS = 4  # times to repeat watering (X)
+DELAY_BETWEEN_WATERINGS = 30  # optional delay between repeats
 
 
 def get_latest_readings():
